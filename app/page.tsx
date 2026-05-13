@@ -234,7 +234,7 @@ export default function Home() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Trending Creatives</h2>
-            <p className="text-gray-600 text-lg">What's hot in the Filipino creative scene</p>
+            <p className="text-gray-600 text-lg">What is hot in the Filipino creative scene</p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
