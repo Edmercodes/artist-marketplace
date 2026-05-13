@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { AlertCircle, Google } from "lucide-react"
+import { AlertCircle, LogIn } from "lucide-react"
 
 import { supabase } from "@/lib/supabaseClient"
 import { Button } from "@/components/ui/button"
@@ -141,7 +141,7 @@ export default function LoginPage() {
               onClick={handleGoogleLogin}
               disabled={loading}
             >
-              <Google className="h-4 w-4" />
+              <LogIn className="h-4 w-4" />
               Continue with Google
             </Button>
 

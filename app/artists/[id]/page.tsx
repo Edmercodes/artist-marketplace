@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, Globe2, Instagram, Mail, Star } from "lucide-react"
+import { ArrowLeft, Globe2, Mail, Star } from "lucide-react"
 
 import { artists, getArtistById } from "@/lib/artists"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 function socialIcon(platform: string) {
   switch (platform) {
     case "instagram":
-      return Instagram
+      return Globe2
     case "website":
       return Globe2
     case "email":
