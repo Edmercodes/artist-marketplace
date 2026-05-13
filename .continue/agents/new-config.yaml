@@ -1,0 +1,36 @@
+name: Artist Marketplace AI
+version: 1.0.0
+schema: v1
+
+models:
+  - name: Qwen Coder Small
+    provider: ollama
+    model: qwen2.5-coder:3b
+
+  # Optional alternative model
+  - name: DeepSeek Coder
+    provider: ollama
+    model: deepseek-coder
+
+context:
+  - provider: code
+  - provider: docs
+  - provider: diff
+
+slashCommands:
+  - name: commit
+    description: Generate commit message
+
+  - name: explain
+    description: Explain selected code
+
+  - name: optimize
+    description: Optimize current code
+
+embeddingsProvider:
+  provider: ollama
+  model: nomic-embed-text
+
+reranker:
+  provider: ollama
+  model: nomic-embed-text
