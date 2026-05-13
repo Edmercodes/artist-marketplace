@@ -16,6 +16,22 @@ export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Prevent rendering until mounted to avoid hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">Loading dashboard...</div>
+        </div>
+      </div>
+    )
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {

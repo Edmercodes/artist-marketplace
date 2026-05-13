@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Search, Star, Users } from "lucide-react"
 
 import { artists } from "@/lib/artists"
@@ -18,6 +18,20 @@ const categoryOptions = [
 export default function ArtistsPage() {
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Prevent rendering until mounted to avoid hydration issues
+  if (!mounted) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center">Loading artists...</div>
+      </main>
+    )
+  }
 
   const filteredArtists = useMemo(() => {
     const query = search.trim().toLowerCase()

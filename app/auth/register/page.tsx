@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle } from "lucide-react"
@@ -19,6 +19,32 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Prevent rendering until mounted to avoid hydration issues
+  if (!mounted) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-xl">
+          <Card className="overflow-hidden shadow-2xl">
+            <CardHeader className="bg-slate-900 px-8 py-8 text-center text-white">
+              <CardTitle className="text-3xl">Create your account</CardTitle>
+              <CardDescription className="text-slate-300">
+                Join as a creator or client and start building your Filipino creative network.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 px-8 py-10">
+              <div className="text-center">Loading...</div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    )
+  }
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
