@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState, useEffect } from "react"
+import Image from "next/image"
+import { useMemo, useState } from "react"
 import { Search, Star, Users } from "lucide-react"
 
 import { artists } from "@/lib/artists"
@@ -18,20 +19,6 @@ const categoryOptions = [
 export default function ArtistsPage() {
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Prevent rendering until mounted to avoid hydration issues
-  if (!mounted) {
-    return (
-      <main className="min-h-screen bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center">Loading artists...</div>
-      </main>
-    )
-  }
 
   const filteredArtists = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -110,10 +97,11 @@ export default function ArtistsPage() {
                 <Card className="overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
                   <CardHeader className="p-0">
                     <div className="relative h-52 overflow-hidden bg-slate-200">
-                      <img
+                      <Image
                         src={artist.profileImage}
                         alt={artist.name}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        fill
+                        className="object-cover transition duration-300 group-hover:scale-105"
                       />
                     </div>
                   </CardHeader>
