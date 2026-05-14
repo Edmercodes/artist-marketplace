@@ -20,6 +20,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setMounted(true)
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
   }, [])
 
   // Prevent rendering until mounted to avoid hydration issues
@@ -32,12 +36,6 @@ export default function DashboardPage() {
       </div>
     )
   }
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-    })
-  }, [])
 
   const handleSignOut = async () => {
     setLoading(true)
