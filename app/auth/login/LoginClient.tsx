@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle, LogIn } from "lucide-react"
 
 import { supabase } from "@/lib/supabaseClient"
+import { signInWithGoogle } from "@/services/authService"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -24,9 +25,9 @@ export default function LoginClient() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null) 
+  const [message, setMessage] = useState<string | null>(null)
   // SAFE replacement for useSearchParams
-  const [unauthorized, setUnauthorized] = useState<string | null>(() => {
+  const [unauthorized] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search)
       return params.get("unauthorized")
@@ -61,14 +62,7 @@ export default function LoginClient() {
     setError(null)
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        queryParams: {
-          prompt: "consent",
-        },
-      },
-    })
+    const { error } = await signInWithGoogle()
 
     setLoading(false)
 

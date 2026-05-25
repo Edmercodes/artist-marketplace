@@ -10,7 +10,6 @@ import { AuthGuard } from "@/components/auth/AuthGuard"
 import { DashboardShell } from "@/components/dashboard/DashboardShell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 export default function AdminPage() {
   const router = useRouter()
