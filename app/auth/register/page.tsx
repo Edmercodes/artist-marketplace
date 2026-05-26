@@ -22,7 +22,8 @@ export default function RegisterPage() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    const id = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(id)
   }, [])
 
   // Prevent rendering until mounted to avoid hydration issues

@@ -19,11 +19,13 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    const id = setTimeout(() => setMounted(true), 0)
 
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
     })
+
+    return () => clearTimeout(id)
   }, [])
 
   // Prevent rendering until mounted to avoid hydration issues
