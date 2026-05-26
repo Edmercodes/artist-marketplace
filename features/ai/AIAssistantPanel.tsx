@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Sparkles, Zap } from "lucide-react"
+import { Zap } from "lucide-react"
 import { aiSuggestions } from "@/lib/featureData"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

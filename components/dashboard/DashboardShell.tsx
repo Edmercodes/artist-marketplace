@@ -3,11 +3,10 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { useState } from "react"
-import { Home, LayoutGrid, Shield, Menu, UserCircle2 } from "lucide-react"
+import { Home, LayoutGrid, Shield, Menu } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 
 interface DashboardShellProps {
   title: string

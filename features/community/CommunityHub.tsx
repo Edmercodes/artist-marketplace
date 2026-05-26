@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart, Bell, Star } from "lucide-react"
+import { Bell, Star } from "lucide-react"
 import { useState } from "react"
 import { creatorSuggestions } from "@/lib/featureData"
 import { Button } from "@/components/ui/button"

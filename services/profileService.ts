@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient"
-import type { CreatorProfile, Profile, UserRole } from "@/types/supabase"
+import type { CreatorProfile, UserRole } from "@/types/supabase"
 
 const AVATAR_BUCKET = "avatars"
 

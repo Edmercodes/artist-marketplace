@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, Camera, Tag, Star } from "lucide-react"
+import { ArrowLeft, Camera, Star } from "lucide-react"
 
 import { listings, getListingById } from "@/lib/marketplace"
 import { Badge } from "@/components/ui/badge"
