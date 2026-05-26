@@ -1,21 +1,24 @@
 "use client"
 
+import type { ComponentType } from "react"
+
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { LogOut, Shield, Home, UserCircle2, LayoutGrid, Tag } from "lucide-react"
+import { Compass, Layers, LayoutGrid, LogOut, Shield, Home, UserCircle2, Tag, Video, Users } from "lucide-react"
 
 import { supabase } from "@/lib/supabaseClient"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({ href, label, Icon }: { href: string; label: string; Icon: ComponentType<{ className?: string }> }) {
   return (
     <Link
       href={href}
       className="rounded-full px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
     >
+      <Icon className="mr-2 h-4 w-4 text-slate-600" />
       {label}
     </Link>
   )
@@ -65,7 +68,10 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/artists", label: "Artists", icon: LayoutGrid },
+    { href: "/discover", label: "Discover", icon: Compass },
+    { href: "/live", label: "LikhaLive", icon: Video },
+    { href: "/verse", label: "LikhaVerse", icon: Layers },
+    { href: "/community", label: "Community", icon: Users },
     { href: "/marketplace", label: "Marketplace", icon: Tag },
     { href: "/dashboard", label: "Dashboard", icon: UserCircle2 },
     { href: "/admin", label: "Admin", icon: Shield },
@@ -86,7 +92,7 @@ export function Header() {
           </span>
           <div>
             <p className="text-sm font-semibold">LikhaPinas</p>
-            <p className="text-xs text-slate-500">Philippine artist marketplace</p>
+            <p className="text-xs text-slate-500">The digital home of Filipino creativity</p>
           </div>
         </Link>
 
@@ -96,14 +102,12 @@ export function Header() {
           </Button>
         </div>
 
-        <nav
-          className={`w-full flex-col gap-2 sm:flex sm:w-auto sm:flex-row ${open ? "flex" : "hidden"}`}
-        >
+        <nav className={`w-full flex-col gap-2 sm:flex sm:w-auto sm:flex-row ${open ? "flex" : "hidden"}`}>
           {navLinks.map((link) => {
             if (link.href === "/admin" && user?.role !== "admin") {
               return null
             }
-            return <NavLink key={link.href} href={link.href} label={link.label} />
+            return <NavLink key={link.href} href={link.href} label={link.label} Icon={link.icon} />
           })}
         </nav>
 
