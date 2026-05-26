@@ -24,8 +24,10 @@ export default function LoginClient() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false)
   // SAFE replacement for useSearchParams
   const [unauthorized] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
@@ -41,6 +43,7 @@ export default function LoginClient() {
     event.preventDefault()
     setError(null)
     setMessage(null)
+    setNeedsEmailConfirmation(false)
     setLoading(true)
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -52,20 +55,8 @@ export default function LoginClient() {
 
     if (error) {
       if (error.message.toLowerCase().includes("email not confirmed")) {
-        const { error: resendError } = await supabase.auth.resend({
-          type: "signup",
-          email,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback?redirect=/dashboard`,
-          },
-        })
-
-        if (resendError) {
-          setError(resendError.message)
-          return
-        }
-
-        setMessage("Please confirm your email before signing in. We sent you a fresh confirmation link.")
+        setNeedsEmailConfirmation(true)
+        setMessage("Please confirm your email before signing in. If your link expired, you can request a new one below.")
         return
       }
 
@@ -74,6 +65,29 @@ export default function LoginClient() {
     }
 
     router.push("/dashboard")
+  }
+
+  const handleResendConfirmation = async () => {
+    setError(null)
+    setMessage(null)
+    setResendLoading(true)
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=/dashboard`,
+      },
+    })
+
+    setResendLoading(false)
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    setMessage("We sent you a fresh confirmation link. Please check your inbox.")
   }
 
   const handleGoogleLogin = async () => {
@@ -111,6 +125,18 @@ export default function LoginClient() {
               <div className="rounded-2xl bg-emerald-50 p-4 text-emerald-700">
                 {message}
               </div>
+            )}
+
+            {needsEmailConfirmation && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResendConfirmation}
+                disabled={resendLoading || !email}
+                type="button"
+              >
+                {resendLoading ? "Sending confirmation..." : "Resend confirmation email"}
+              </Button>
             )}
 
             {error && (
