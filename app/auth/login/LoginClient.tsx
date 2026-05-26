@@ -51,6 +51,24 @@ export default function LoginClient() {
     setLoading(false)
 
     if (error) {
+      if (error.message.toLowerCase().includes("email not confirmed")) {
+        const { error: resendError } = await supabase.auth.resend({
+          type: "signup",
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?redirect=/dashboard`,
+          },
+        })
+
+        if (resendError) {
+          setError(resendError.message)
+          return
+        }
+
+        setMessage("Please confirm your email before signing in. We sent you a fresh confirmation link.")
+        return
+      }
+
       setError(error.message)
       return
     }

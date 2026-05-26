@@ -53,10 +53,11 @@ export default function RegisterPage() {
     setMessage(null)
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=/dashboard`,
         data: {
           role,
         },
@@ -70,8 +71,12 @@ export default function RegisterPage() {
       return
     }
 
-    setMessage("Check your inbox for a confirmation link.")
-    setTimeout(() => router.push("/dashboard"), 1200)
+    if (data.session) {
+      router.push("/dashboard")
+      return
+    }
+
+    setMessage("Check your inbox for a confirmation link before signing in.")
   }
 
   return (
