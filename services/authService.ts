@@ -27,3 +27,18 @@ export async function signUpWithEmail(email: string, password: string, role: str
     },
   })
 }
+
+export async function sendOtpToPhone(phone: string) {
+  return supabase.auth.signInWithOtp({ phone })
+}
+
+export async function verifyPhoneOtp(phone: string, token: string) {
+  // client-side wrapper; server will verify through API route
+  // depending on supabase-js this may or may not exist in client
+  try {
+    // @ts-ignore
+    return await (supabase.auth as any).verifyOtp({ phone, token, type: "signup" })
+  } catch (err) {
+    return { error: err }
+  }
+}
