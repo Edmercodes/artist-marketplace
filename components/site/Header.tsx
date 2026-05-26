@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -74,11 +75,17 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-xl">
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-3 text-slate-900">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-pink-500 text-white shadow-lg shadow-orange-200">
-            A
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 shadow-lg shadow-slate-200 overflow-hidden">
+            <Image
+              src="/likhapinas.png"
+              alt="LikhaPinas logo"
+              width={40}
+              height={40}
+              className="object-cover"
+            />
           </span>
           <div>
-            <p className="text-sm font-semibold">ArtisanPH</p>
+            <p className="text-sm font-semibold">LikhaPinas</p>
             <p className="text-xs text-slate-500">Philippine artist marketplace</p>
           </div>
         </Link>

@@ -3,7 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 
 export const metadata: Metadata = {
-  title: "ArtisanPH - Philippine Artist Marketplace",
+  title: "LikhaPinas - Philippine Artist Marketplace",
   description: "Discover and commission Filipino artists. From digital art to traditional crafts, find your perfect creative collaborator.",
 };
 
