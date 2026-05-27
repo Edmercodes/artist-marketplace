@@ -50,7 +50,14 @@ export default function RegisterPage() {
         }),
       })
 
-      const body = await resp.json()
+      const text = await resp.text()
+      let body: { error?: string } = {}
+      try {
+        body = JSON.parse(text)
+      } catch {
+        body = { error: text }
+      }
+
       setLoading(false)
 
       if (!resp.ok) {
@@ -58,11 +65,11 @@ export default function RegisterPage() {
         return
       }
 
-      // go to OTP verification
       router.push(`/auth/verify?phone=${encodeURIComponent(phone)}`)
-    } catch (err: any) {
+    } catch (error: unknown) {
       setLoading(false)
-      setError(err.message || "Something went wrong")
+      const message = error instanceof Error ? error.message : String(error)
+      setError(message || "Something went wrong")
     }
   }
 

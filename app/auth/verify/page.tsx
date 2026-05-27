@@ -54,7 +54,13 @@ export default function VerifyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, token }),
       })
-      const body = await resp.json()
+      const text = await resp.text()
+      let body: { error?: string } = {}
+      try {
+        body = JSON.parse(text)
+      } catch {
+        body = { error: text }
+      }
       setLoading(false)
       if (!resp.ok) {
         setError(body.error || "Verification failed")
@@ -62,9 +68,10 @@ export default function VerifyPage() {
       }
       setMessage("Phone verified. Redirecting…")
       setTimeout(() => router.push("/onboarding"), 800)
-    } catch (err: any) {
+    } catch (error: unknown) {
       setLoading(false)
-      setError(err.message || "Verification error")
+      const message = error instanceof Error ? error.message : String(error)
+      setError(message || "Verification error")
     }
   }
 
@@ -78,7 +85,13 @@ export default function VerifyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone }),
       })
-      const body = await resp.json()
+      const text = await resp.text()
+      let body: { error?: string } = {}
+      try {
+        body = JSON.parse(text)
+      } catch {
+        body = { error: text }
+      }
       setLoading(false)
       if (!resp.ok) {
         setError(body.error || "Could not resend OTP")
@@ -86,9 +99,10 @@ export default function VerifyPage() {
       }
       setMessage("OTP resent")
       setTime(120)
-    } catch (err: any) {
+    } catch (error: unknown) {
       setLoading(false)
-      setError(err.message || "Resend failed")
+      const message = error instanceof Error ? error.message : String(error)
+      setError(message || "Resend failed")
     }
   }
 
