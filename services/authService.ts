@@ -5,10 +5,13 @@ export async function signInWithGoogle() {
     throw new Error("Google sign in must be triggered from the browser")
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+  const redirectTo = new URL("/auth/callback?redirect=/", appUrl).toString()
+
   return supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback?redirect=/onboarding`,
+      redirectTo,
       queryParams: {
         prompt: "consent",
       },
