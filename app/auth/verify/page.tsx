@@ -154,7 +154,9 @@ export default function VerifyPage() {
             {code.map((c, i) => (
               <Input
                 key={i}
-                ref={(el) => (inputsRef.current[i] = el)}
+                ref={(el) => {
+                  if (el) inputsRef.current[i] = el
+                }}
                 value={c}
                 onChange={(e) => updateAt(i, e.target.value)}
                 onKeyDown={(e) => {
