@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
 import { Button } from "@/components/ui/button"
@@ -34,28 +34,7 @@ export default function VerifyPage() {
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    inputsRef.current[0]?.focus()
-  }, [])
-
-  useEffect(() => {
-    if (!phone) {
-      setError("Missing phone number")
-      return
-    }
-
-    void sendOtp()
-  }, [phone])
-
-  const updateAt = (idx: number, val: string) => {
-    if (!/^[0-9]*$/.test(val) && val !== "") return
-    const next = [...code]
-    next[idx] = val.slice(-1)
-    setCode(next)
-    if (val && idx < 5) inputsRef.current[idx + 1]?.focus()
-  }
-
-  const sendOtp = async () => {
+  const sendOtp = useCallback(async () => {
     if (!phone) {
       setError("Missing phone number")
       return
@@ -90,6 +69,26 @@ export default function VerifyPage() {
       const message = error instanceof Error ? error.message : String(error)
       setError(message || "Send OTP failed")
     }
+  }, [phone, setTime])
+
+  useEffect(() => {
+    inputsRef.current[0]?.focus()
+  }, [])
+
+  useEffect(() => {
+    if (!phone) {
+      return
+    }
+
+    void sendOtp()
+  }, [phone, sendOtp])
+
+  const updateAt = (idx: number, val: string) => {
+    if (!/^[0-9]*$/.test(val) && val !== "") return
+    const next = [...code]
+    next[idx] = val.slice(-1)
+    setCode(next)
+    if (val && idx < 5) inputsRef.current[idx + 1]?.focus()
   }
 
   const handleVerify = async () => {
@@ -104,10 +103,21 @@ export default function VerifyPage() {
     }
 
     try {
-      const { data, error } = await (supabase.auth as any).verifyOtp({ phone, token, type: "sms" })
-      if (error) {
+      type VerifyOtpResponse = {
+        data?: unknown
+        error?: { message: string } | null
+      }
+      const authVerifyOtp = supabase.auth as unknown as {
+        verifyOtp?: (options: {
+          phone: string
+          token: string
+          type: string
+        }) => Promise<VerifyOtpResponse>
+      }
+      const response = await authVerifyOtp.verifyOtp?.({ phone, token, type: "sms" })
+      if (!response || response.error) {
         setLoading(false)
-        setError(error.message || "Verification failed")
+        setError(response?.error?.message || "Verification failed")
         return
       }
 
