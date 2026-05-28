@@ -80,7 +80,13 @@ export default function VerifyPage() {
       return
     }
 
-    void sendOtp()
+    const timer = window.setTimeout(() => {
+      void sendOtp()
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
   }, [phone, sendOtp])
 
   const updateAt = (idx: number, val: string) => {
