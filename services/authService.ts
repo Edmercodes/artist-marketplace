@@ -39,8 +39,21 @@ export async function verifyPhoneOtp(phone: string, token: string) {
   // client-side wrapper; server will verify through API route
   // depending on supabase-js this may or may not exist in client
   try {
-    // @ts-ignore
-    return await (supabase.auth as any).verifyOtp({ phone, token, type: "signup" })
+    type VerifyOtpFn = (options: {
+      phone: string
+      token: string
+      type: string
+    }) => Promise<{ data?: unknown; error?: { message: string } | null }>
+
+    const authWithVerifyOtp = supabase.auth as unknown as {
+      verifyOtp?: VerifyOtpFn
+    }
+
+    if (typeof authWithVerifyOtp.verifyOtp !== "function") {
+      throw new Error("Supabase verifyOtp method is not available")
+    }
+
+    return await authWithVerifyOtp.verifyOtp({ phone, token, type: "signup" })
   } catch (err) {
     return { error: err }
   }
