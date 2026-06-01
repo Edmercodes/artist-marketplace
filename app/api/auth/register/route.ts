@@ -54,8 +54,15 @@ export async function POST(req: Request) {
     }
 
     const userId = (signUpData as any)?.user?.id;
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unable to create profile because the auth user ID was not returned." },
+        { status: 500 }
+      );
+    }
+
     const profile = {
-      id: userId || undefined,
+      id: userId,
       full_name,
       username: usernameClean,
       email: emailClean,
