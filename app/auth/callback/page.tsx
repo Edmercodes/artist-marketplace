@@ -14,22 +14,54 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const finishSignIn = async () => {
-      const params = new URLSearchParams(window.location.search)
-      const code = params.get("code")
-      const redirect = params.get("redirect") || "/dashboard"
-      const errorDescription = params.get("error_description")
+      const searchParams = new URLSearchParams(window.location.search)
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""))
+      const redirect =
+        searchParams.get("redirect") || hashParams.get("redirect") || "/dashboard"
+      const errorDescription =
+        searchParams.get("error_description") || hashParams.get("error_description")
 
       if (errorDescription) {
         setError(errorDescription)
         return
       }
 
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+      const accessToken = hashParams.get("access_token")
+      const refreshToken = hashParams.get("refresh_token")
+
+      if (accessToken && refreshToken) {
+        const sessionData = {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          token_type: hashParams.get("token_type") || "bearer",
+          expires_in: hashParams.get("expires_in") ? Number(hashParams.get("expires_in")) : undefined,
+          provider_token: hashParams.get("provider_token") || undefined,
+          provider_refresh_token: hashParams.get("provider_refresh_token") || undefined,
+        }
+
+        const { error } = await supabase.auth.setSession(sessionData as {
+          access_token: string
+          refresh_token: string
+          token_type?: string
+          expires_in?: number
+          provider_token?: string
+          provider_refresh_token?: string
+        })
 
         if (error) {
           setError(error.message)
           return
+        }
+      } else if (searchParams.get("code")) {
+        const code = searchParams.get("code")
+
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+          if (error) {
+            setError(error.message)
+            return
+          }
         }
       }
 
