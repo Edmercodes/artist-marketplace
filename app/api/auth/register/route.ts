@@ -56,7 +56,16 @@ export async function POST(req: Request) {
     const userId = signUpData?.user?.id;
     if (!userId) {
       return NextResponse.json(
-        { error: "Unable to create profile because the auth user ID was not returned." },
+        { error: "User creation failed - no ID returned" },
+        { status: 500 }
+      );
+    }
+
+    // Verify auth user actually exists in auth.users before inserting profile
+    const { data: authUser, error: authCheckError } = await supabaseAdmin.auth.admin.getUserById(userId);
+    if (authCheckError || !authUser?.user) {
+      return NextResponse.json(
+        { error: "Auth user verification failed" },
         { status: 500 }
       );
     }

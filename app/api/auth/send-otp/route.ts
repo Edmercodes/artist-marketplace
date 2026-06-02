@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { phone } = await req.json();
     if (!phone) return NextResponse.json({ error: "Missing phone" }, { status: 400 });
 
-    const ip = (req as any).headers?.get("x-forwarded-for") || "local";
+    const ip = req.headers.get("x-forwarded-for") || "local";
     if (isRateLimited(`send-otp:${ip}:${phone}`)) {
       return NextResponse.json({ error: "Too many OTP requests, try later" }, { status: 429 });
     }
