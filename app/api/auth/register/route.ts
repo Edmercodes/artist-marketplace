@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const ip = (req as any).headers?.get("x-forwarded-for") || "local";
+    const ip = req.headers.get("x-forwarded-for") || "local";
     if (isRateLimited(`register:${ip}`)) {
       return NextResponse.json({ error: "Too many requests, please try again later" }, { status: 429 });
     }
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: signUpError.message }, { status: 400 });
     }
 
-    const userId = (signUpData as any)?.user?.id;
+    const userId = signUpData?.user?.id;
     if (!userId) {
       return NextResponse.json(
         { error: "Unable to create profile because the auth user ID was not returned." },
