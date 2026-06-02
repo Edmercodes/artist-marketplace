@@ -1,7 +1,7 @@
 -- Migration: Add profiles table with unique constraints for email, username, phone_number
 
 create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
+  id uuid primary key default gen_random_uuid(),
   full_name text,
   username text not null,
   email text not null,

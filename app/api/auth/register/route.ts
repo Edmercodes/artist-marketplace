@@ -50,22 +50,17 @@ export async function POST(req: Request) {
     });
 
     if (signUpError) {
+      console.error("SignUp error:", signUpError);
       return NextResponse.json({ error: signUpError.message }, { status: 400 });
     }
 
+    console.log("SignUpData:", JSON.stringify(signUpData, null, 2));
     const userId = signUpData?.user?.id;
+    console.log("Extracted userId:", userId);
+    
     if (!userId) {
       return NextResponse.json(
-        { error: "User creation failed - no ID returned" },
-        { status: 500 }
-      );
-    }
-
-    // Verify auth user actually exists in auth.users before inserting profile
-    const { data: authUser, error: authCheckError } = await supabaseAdmin.auth.admin.getUserById(userId);
-    if (authCheckError || !authUser?.user) {
-      return NextResponse.json(
-        { error: "Auth user verification failed" },
+        { error: "Unable to create profile because the auth user ID was not returned." },
         { status: 500 }
       );
     }
@@ -86,6 +81,8 @@ export async function POST(req: Request) {
 
     const { error: insertError } = await supabaseAdmin.from("profiles").insert([profile]);
     if (insertError) {
+      console.error("Profile insert error:", insertError);
+      console.error("Profile object attempted:", JSON.stringify(profile, null, 2));
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
