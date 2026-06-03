@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient"
-import type { CreatorProfile, UserRole } from "@/types/supabase"
+import type { CreatorProfile, UserRole, Database } from "@/types/supabase"
 
 const AVATAR_BUCKET = "avatars"
 
@@ -33,7 +33,7 @@ export async function upsertProfile(profile: {
   location?: string
   bio?: string
 }) {
-  const { error } = await supabase.from("profiles").upsert({
+  const payload = {
     auth_id: profile.auth_id,
     email: profile.email,
     role: profile.role,
@@ -42,12 +42,14 @@ export async function upsertProfile(profile: {
     avatar_url: profile.avatar_url,
     location: profile.location,
     bio: profile.bio,
-  })
+  } as Database["public"]["Tables"]["profiles"]["Insert"]
+
+  const { error } = await (supabase as any).from("profiles").upsert(payload)
   return { error }
 }
 
 export async function upsertCreatorProfile(data: CreatorProfile) {
-  const { error } = await supabase.from("creator_profiles").upsert({
+  const payload = {
     user_id: data.user_id,
     categories: data.categories,
     pricing: data.pricing,
@@ -57,6 +59,8 @@ export async function upsertCreatorProfile(data: CreatorProfile) {
       url: item.url,
       description: item.description,
     })),
-  })
+  } as Database["public"]["Tables"]["creator_profiles"]["Insert"]
+
+  const { error } = await (supabase as any).from("creator_profiles").upsert(payload)
   return { error }
 }

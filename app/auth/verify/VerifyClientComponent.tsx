@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
+import type { Database } from "@/types/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -136,7 +137,7 @@ export function VerifyClient() {
 
       const userId = sessionData?.session?.user?.id
       if (userId) {
-        const { error: profileError } = await supabase.from("profiles").update({ is_phone_verified: true }).eq("id", userId)
+        const { error: profileError } = await (supabase as any).from("profiles").update({ is_phone_verified: true }).eq("id", userId)
         if (profileError) {
           setLoading(false)
           setError(profileError.message || "Could not update profile")
