@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { type User } from "@supabase/supabase-js"
 import { ShieldAlert } from "lucide-react"
 
-import { supabase } from "@/lib/supabaseClient"
 import { AuthGuard } from "@/components/auth/AuthGuard"
 import { DashboardShell } from "@/components/dashboard/DashboardShell"
 import { Button } from "@/components/ui/button"
