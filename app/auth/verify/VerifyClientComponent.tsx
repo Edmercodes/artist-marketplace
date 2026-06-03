@@ -1,9 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useState, useRef } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { supabase } from "@/lib/supabaseClient"
-import type { Database } from "@/types/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -34,6 +33,8 @@ export function VerifyClient() {
   const [otpLoading, setOtpLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [otpMethod, setOtpMethod] = useState<"sms" | "email" | "twilio">("sms")
+  const [otpTarget, setOtpTarget] = useState<string>(phone)
 
   const sendOtp = useCallback(async () => {
     if (!phone) {
@@ -52,7 +53,7 @@ export function VerifyClient() {
         body: JSON.stringify({ phone }),
       })
       const text = await resp.text()
-      let body: { error?: string } = {}
+      let body: { error?: string; method?: string; target?: string; message?: string } = {}
       try {
         body = JSON.parse(text)
       } catch {
@@ -63,7 +64,9 @@ export function VerifyClient() {
         setError(body.error || "Could not send OTP")
         return
       }
-      setMessage("OTP sent. Enter the code from SMS.")
+      setOtpMethod((body.method as "sms" | "email" | "twilio") || "sms")
+      setOtpTarget(body.target || phone)
+      setMessage(body.message || "OTP sent. Enter the code from SMS.")
       setTime(120)
     } catch (error: unknown) {
       setOtpLoading(false)
@@ -110,43 +113,27 @@ export function VerifyClient() {
     }
 
     try {
-      type VerifyOtpResponse = {
-        data?: unknown
-        error?: { message: string } | null
-      }
-      const authVerifyOtp = supabase.auth as unknown as {
-        verifyOtp?: (options: {
-          phone: string
-          token: string
-          type: string
-        }) => Promise<VerifyOtpResponse>
-      }
-      const response = await authVerifyOtp.verifyOtp?.({ phone, token, type: "sms" })
-      if (!response || response.error) {
-        setLoading(false)
-        setError(response?.error?.message || "Verification failed")
-        return
+      const resp = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method: otpMethod, target: otpTarget, token }),
+      })
+      const text = await resp.text()
+      let body: { error?: string; message?: string } = {}
+      try {
+        body = JSON.parse(text)
+      } catch {
+        body = { error: text }
       }
 
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-      if (sessionError) {
+      if (!resp.ok) {
         setLoading(false)
-        setError(sessionError.message || "Unable to get auth session")
+        setError(body.error || body.message || "Verification failed")
         return
-      }
-
-      const userId = sessionData?.session?.user?.id
-      if (userId) {
-        const { error: profileError } = await (supabase as any).from("profiles").update({ is_phone_verified: true }).eq("id", userId)
-        if (profileError) {
-          setLoading(false)
-          setError(profileError.message || "Could not update profile")
-          return
-        }
       }
 
       setLoading(false)
-      setMessage("Phone verified. Redirecting…")
+      setMessage(body.message || "Verified. Redirecting…")
       setTimeout(() => router.push("/onboarding"), 800)
     } catch (error: unknown) {
       setLoading(false)
@@ -164,8 +151,15 @@ export function VerifyClient() {
     <main className="min-h-screen bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-xl">
         <div className="overflow-hidden shadow-2xl bg-white rounded-2xl p-8">
-          <h2 className="text-2xl font-semibold">Verify your phone</h2>
-          <p className="text-sm text-slate-600 mt-2">Enter the 6-digit code we sent to {phone}</p>
+          <h2 className="text-2xl font-semibold">Verify your code</h2>
+          <p className="text-sm text-slate-600 mt-2">
+            Enter the 6-digit code sent to {otpTarget || phone} via {otpMethod.toUpperCase()}.
+          </p>
+          {otpMethod !== "sms" ? (
+            <p className="text-sm text-slate-500 mt-1">
+              We sent a fallback code because SMS delivery was unavailable for your number.
+            </p>
+          ) : null}
 
           <div className="mt-6 flex items-center justify-center gap-2">
             {code.map((c, i) => (
